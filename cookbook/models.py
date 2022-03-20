@@ -714,6 +714,13 @@ class Recipe(ExportModelOperationsMixin('recipe'), models.Model, PermissionModel
             Index(fields=['name']),
         )
 
+class UserImage(ExportModelOperationsMixin('userimage'), models.Model, PermissionModelMixin):
+    image = models.ImageField(upload_to='recipes/')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
 class Comment(ExportModelOperationsMixin('comment'), models.Model, PermissionModelMixin):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
@@ -1111,7 +1118,6 @@ class SearchPreference(models.Model, PermissionModelMixin):
     fulltext = models.ManyToManyField(SearchFields, related_name="fulltext_fields", blank=True)
     trigram_threshold = models.DecimalField(default=0.2, decimal_places=2, max_digits=3)
 
-
 class UserFile(ExportModelOperationsMixin('user_files'), models.Model, PermissionModelMixin):
     name = models.CharField(max_length=128)
     file = models.FileField(upload_to='files/')
@@ -1127,6 +1133,7 @@ class UserFile(ExportModelOperationsMixin('user_files'), models.Model, Permissio
             self.file.name = f'{uuid.uuid4()}' + pathlib.Path(self.file.name).suffix
             self.file_size_kb = round(self.file.size / 1000)
         super(UserFile, self).save(*args, **kwargs)
+
 
 
 class Automation(ExportModelOperationsMixin('automations'), models.Model, PermissionModelMixin):
